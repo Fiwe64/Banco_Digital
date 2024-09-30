@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco Digital</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Banco Digital</h1>
+
+<section>
+    <h2>Cadastrar Cliente</h2>
+    <form id="clienteForm">
+        <input type="text" class="clienteNome" placeholder="Nome" required>
+        <input type="email" class="clienteEmail" placeholder="Email" required>
+        <input type="text" class="clienteTelefone" placeholder="Telefone" required>
+        <button type="submit">Cadastrar Cliente</button>
+    </form>
+</section>
+
+<section>
+    <h2>Cadastrar Conta</h2>
+    <form id="contaForm">
+        <input type="number" id="clienteIdConta" placeholder="ID do Cliente" required>
+        <input type="number" id="saldoConta" placeholder="Saldo Inicial" required>
+        <select id="tipoConta" required>
+            <option value="CORRENTE">Conta Corrente</option>
+            <option value="POUPANCA">Conta Poupança</option>
+            <option value="SALARIO">Conta Salário</option>
+        </select>
+        <button type="submit">Cadastrar Conta</button>
+    </form>
+</section>
+
+<section>
+    <h2>Realizar Pagamento</h2>
+    <form id="pagamentoForm">
+        <input type="number" id="contaIdPagamento" placeholder="ID da Conta" required>
+        <input type="number" id="valorPagamento" placeholder="Valor do Pagamento" required>
+        <button type="submit">Realizar Pagamento</button>
+    </form>
+</section>
+
+<section>
+    <h2>Visualizar Saldo</h2>
+    <form id="visualizarSaldoForm">
+        <input type="number" id="contaIdSaldo" placeholder="ID da Conta" required>
+        <button type="submit">Visualizar Saldo</button>
+    </form>
+    <div id="saldoResultado"></div>
+</section>
+
+<section>
+    <h2>Visualizar Clientes</h2>
+    <button id="visualizarClientesBtn">Listar Clientes</button>
+    <div id="clientesResultado"></div>
+</section>
+
+<section>
+    <h2>Visualizar Contas</h2>
+    <button id="visualizarContasBtn">Listar Contas</button>
+    <div id="contasResultado"></div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>

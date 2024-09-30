@@ -62,16 +62,23 @@ public class BancoController {
 
     @PostMapping("/pagamentos")
     public Pagamento realizarPagamento(@RequestBody Pagamento pagamento) {
-        // Verifica se a conta já existe
-        Conta contaExistente = contaRepository.findById(pagamento.getConta().getId()).orElse(null);
+        // Busca a conta associada ao pagamento
+        Conta conta = contaRepository.findById(pagamento.getConta().getId())
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
 
-        if (contaExistente != null) {
-            // Atribui a conta existente ao pagamento
-            pagamento.setConta(contaExistente);
-            return pagamentoRepository.save(pagamento);
-        } else {
-            throw new RuntimeException("Conta não encontrada");
+        // Verifica se o saldo da conta é suficiente
+        if (conta.getSaldo() < pagamento.getValor()) {
+            throw new RuntimeException("Saldo insuficiente para realizar o pagamento.");
         }
+
+        // Subtrai o valor do pagamento do saldo da conta
+        conta.setSaldo(conta.getSaldo() - pagamento.getValor());
+
+        // Atualiza a conta no banco de dados
+        contaRepository.save(conta);
+
+        // Salva o pagamento
+        return pagamentoRepository.save(pagamento);
     }
 
     @GetMapping("/clientes")
@@ -88,6 +95,14 @@ public class BancoController {
     public List<Pagamento> listarPagamentos() {
         return pagamentoRepository.findAll();
     }
+
+    @GetMapping("/contas/{id}/saldo")
+    public Double visualizarSaldo(@PathVariable Long id) {
+        return contaRepository.findById(id)
+                .map(Conta::getSaldo)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+    }
+
 
     @PostMapping("/contas/corrente")
     public Conta criarContaCorrente(@RequestBody ContaCorrente contaCorrente) {
