@@ -1,68 +1,232 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Banco Digital</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+        }
+        input[type="text"], input[type="number"], input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .data-list {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-<h1>Banco Digital</h1>
 
-<section>
-    <h2>Cadastrar Cliente</h2>
-    <form id="clienteForm">
-        <input type="text" class="clienteNome" placeholder="Nome" required>
-        <input type="email" class="clienteEmail" placeholder="Email" required>
-        <input type="text" class="clienteTelefone" placeholder="Telefone" required>
-        <button type="submit">Cadastrar Cliente</button>
-    </form>
-</section>
+<h3>Criação de Cliente</h3>
+<form id="formCliente">
+    <div class="form-group">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required>
+    </div>
+    <input type="submit" value="Criar Cliente">
+</form>
 
-<section>
-    <h2>Cadastrar Conta</h2>
-    <form id="contaForm">
-        <input type="number" id="clienteIdConta" placeholder="ID do Cliente" required>
-        <input type="number" id="saldoConta" placeholder="Saldo Inicial" required>
-        <select id="tipoConta" required>
-            <option value="CORRENTE">Conta Corrente</option>
-            <option value="POUPANCA">Conta Poupança</option>
-            <option value="SALARIO">Conta Salário</option>
-        </select>
-        <button type="submit">Cadastrar Conta</button>
-    </form>
-</section>
+<h3>Criação de Conta</h3>
+<form id="formConta">
+    <div class="form-group">
+        <label for="clienteIdConta">ID do Cliente:</label>
+        <input type="number" id="clienteIdConta" name="clienteIdConta" required>
+    </div>
+    <div class="form-group">
+        <label for="tipoConta">Tipo de Conta (Corrente/Poupanca/Salario):</label>
+        <input type="text" id="tipoConta" name="tipoConta" required>
+    </div>
+    <div class="form-group">
+        <label for="saldoInicial">Saldo Inicial:</label>
+        <input type="number" id="saldoInicial" name="saldoInicial" step="0.01" required>
+    </div>
+    <input type="submit" value="Criar Conta">
+</form>
 
-<section>
-    <h2>Realizar Pagamento</h2>
-    <form id="pagamentoForm">
-        <input type="number" id="contaIdPagamento" placeholder="ID da Conta" required>
-        <input type="number" id="valorPagamento" placeholder="Valor do Pagamento" required>
-        <button type="submit">Realizar Pagamento</button>
-    </form>
-</section>
+<h3>Realizar Pagamento</h3>
+<form id="formPagamento">
+    <div class="form-group">
+        <label for="clienteId">ID do Cliente:</label>
+        <input type="number" id="clienteId" name="clienteId" required>
+    </div>
+    <div class="form-group">
+        <label for="contaId">ID da Conta:</label>
+        <input type="number" id="contaId" name="contaId" required>
+    </div>
+    <div class="form-group">
+        <label for="valor">Valor do Pagamento:</label>
+        <input type="number" id="valor" name="valor" step="0.01" required>
+    </div>
+    <input type="submit" value="Realizar Pagamento">
+</form>
 
-<section>
-    <h2>Visualizar Saldo</h2>
-    <form id="visualizarSaldoForm">
-        <input type="number" id="contaIdSaldo" placeholder="ID da Conta" required>
-        <button type="submit">Visualizar Saldo</button>
-    </form>
-    <div id="saldoResultado"></div>
-</section>
+<h3>Clientes Criados</h3>
+<button onclick="listarClientes()">Listar Clientes</button>
+<div id="clientesList" class="data-list"></div>
 
-<section>
-    <h2>Visualizar Clientes</h2>
-    <button id="visualizarClientesBtn">Listar Clientes</button>
-    <div id="clientesResultado"></div>
-</section>
+<h3>Contas Criadas</h3>
+<button onclick="listarContas()">Listar Contas</button>
+<div id="contasList" class="data-list"></div>
 
-<section>
-    <h2>Visualizar Contas</h2>
-    <button id="visualizarContasBtn">Listar Contas</button>
-    <div id="contasResultado"></div>
-</section>
+<script>
+    document.getElementById('formCliente').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-<script src="script.js"></script>
+        const clienteData = {
+            nome: document.getElementById('nome').value,
+            email: document.getElementById('email').value,
+            telefone: document.getElementById('telefone').value
+        };
+
+        fetch('http://localhost:8080/api/banco/clientes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(clienteData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Cliente criado com sucesso: ' + data.id);
+        })
+        .catch(error => {
+            console.error('Erro ao criar cliente:', error);
+        });
+    });
+
+    document.getElementById('formConta').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const tipoConta = document.getElementById('tipoConta').value.toLowerCase();
+        let contaData = {
+            cliente: { id: parseInt(document.getElementById('clienteIdConta').value) },
+            saldo: parseFloat(document.getElementById('saldoInicial').value)
+        };
+
+        let endpoint = '';
+
+        if (tipoConta === 'corrente') {
+            endpoint = 'http://localhost:8080/api/banco/contas/corrente';
+        } else if (tipoConta === 'poupanca') {
+            endpoint = 'http://localhost:8080/api/banco/contas/poupanca';
+        } else if (tipoConta === 'salario') {
+            endpoint = 'http://localhost:8080/api/banco/contas/salario';
+        } else {
+            alert('Tipo de conta inválido! Escolha entre Corrente, Poupanca, ou Salario.');
+            return;
+        }
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(contaData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Conta criada com sucesso: ' + data.id);
+        })
+        .catch(error => {
+            console.error('Erro ao criar conta:', error);
+        });
+    });
+
+    document.getElementById('formPagamento').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const pagamentoData = {
+            valor: parseFloat(document.getElementById('valor').value),
+            cliente: { id: parseInt(document.getElementById('clienteId').value) },
+            conta: { id: parseInt(document.getElementById('contaId').value) }
+        };
+
+        fetch('http://localhost:8080/api/banco/pagamentos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pagamentoData)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Pagamento realizado com sucesso');
+            } else {
+                alert('Erro ao processar pagamento');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao realizar pagamento:', error);
+        });
+    });
+
+    function listarClientes() {
+        fetch('http://localhost:8080/api/banco/clientes')
+        .then(response => response.json())
+        .then(data => {
+            const clientesList = document.getElementById('clientesList');
+            clientesList.innerHTML = '';
+
+            if (data.length === 0) {
+                clientesList.innerHTML = 'Nenhum cliente encontrado.';
+            } else {
+                data.forEach(cliente => {
+                    clientesList.innerHTML += `<p>ID: ${cliente.id}, Nome: ${cliente.nome}, Email: ${cliente.email}, Telefone: ${cliente.telefone}</p>`;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao listar clientes:', error);
+        });
+    }
+
+    function listarContas() {
+    fetch('/api/banco/contas')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao carregar contas.');
+            }
+            return response.json();
+        })
+        .then(contas => {
+            // Processar as contas aqui
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Erro ao listar contas: ' + error.message);
+        });
+}
+
+
+
+</script>
+
 </body>
 </html>

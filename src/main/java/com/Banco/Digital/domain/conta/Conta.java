@@ -30,4 +30,9 @@ public abstract class Conta {
 
     public abstract void depositar(Double valor);
     public abstract void sacar(Double valor);
+
+    public String getTipoConta() {
+        return this.getClass().getSimpleName(); // Retorna o nome da classe, que é o tipo de conta
+    }
+
 }

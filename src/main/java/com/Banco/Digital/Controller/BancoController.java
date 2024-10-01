@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/banco")
 public class BancoController {
@@ -90,6 +91,8 @@ public class BancoController {
     public List<Conta> listarContas() {
         return contaRepository.findAll();
     }
+
+
 
     @GetMapping("/pagamentos")
     public List<Pagamento> listarPagamentos() {

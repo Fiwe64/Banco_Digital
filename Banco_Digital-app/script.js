@@ -1,112 +1,91 @@
-// URL da API
-const apiUrl = "http://localhost:8080/api/banco";
+document.getElementById('form-criar-cliente').addEventListener('submit', function (event) {
+    event.preventDefault();
 
-// Seleção de elementos do formulário
-const formulario = document.querySelector("#clienteForm");
-const Inome = document.querySelector("#clienteNome");
-const Iemail = document.querySelector("#clienteEmail");
-const Itelefone = document.querySelector("#clienteTelefone");
-const contaForm = document.querySelector("#contaForm");
-const saldoForm = document.querySelector("#visualizarSaldoForm");
-const visualizarClientesBtn = document.querySelector("#visualizarClientesBtn");
-const visualizarContasBtn = document.querySelector("#visualizarContasBtn");
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    const telefone = document.getElementById('telefone').value;
 
-// Função para cadastrar um novo cliente
-function cadastrar() {
-  const clienteData = {
-    nome: Inome.value,
-    email: Iemail.value,
-    telefone: Itelefone.value
-  };
-
-  console.log(clienteData); // Para ver os dados que estão sendo enviados
-
-  fetch(`${apiUrl}/clientes`, {
-    method: "POST",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(clienteData)
-  })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    } else {
-      return res.text().then(text => {
-        throw new Error(`Erro: ${res.status} - ${text}`);
-      });
-    }
-  })
-  .then(data => {
-    console.log("Cadastro realizado:", data);
-    alert("Cadastro realizado com sucesso!");
-    listarClientes(); // Atualiza a lista de clientes
-    limpar(); // Limpa os campos do formulário
-  })
-  .catch(error => {
-    console.error("Erro:", error);
-    alert("Erro ao realizar o cadastro: " + error.message);
-  });
-}
-
-// Função para listar clientes
-function listarClientes() {
-  fetch(`${apiUrl}/clientes`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Erro ao buscar lista de clientes');
-      }
-      return response.json();
+    fetch('http://localhost:8080/api/clientes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            nome: nome,
+            email: email,
+            telefone: telefone
+        })
     })
-    .then(clientes => {
-      console.log("Lista de clientes:", clientes);
-      // Gerar o HTML da lista de clientes
-      const listaHTML = clientes.map(cliente => `
-        <ul>
-          <li>Nome: ${cliente.nome}</li>
-          <li>Email: ${cliente.email}</li>
-          <li>Telefone: ${cliente.telefone}</li>
-          <button onclick="editarClientes(${cliente.id})">Editar</button>
-          <button onclick="deletarClientes(${cliente.id})">Deletar</button>
-        </ul>`).join("");
-
-      // Inserir a lista gerada no elemento HTML com o id "clientesResultado"
-      document.getElementById("clientesResultado").innerHTML = listaHTML;
+    .then(response => response.json())
+    .then(data => {
+        alert('Cliente criado com sucesso!');
     })
-    .catch(error => {
-      console.error("Erro ao listar clientes:", error);
-    });
-}
-
-// Função para visualizar saldo
-saldoForm.addEventListener('submit', function(event) {
-  event.preventDefault(); // Previne o comportamento padrão do formulário
-  const contaId = document.getElementById("contaIdSaldo").value;
-
-  fetch(`${apiUrl}/contas/${contaId}/saldo`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Erro ao visualizar saldo');
-      }
-      return response.json();
-    })
-    .then(saldo => {
-      document.getElementById("saldoResultado").innerText = `Saldo: R$ ${saldo}`;
-    })
-    .catch(error => {
-      console.error("Erro ao visualizar saldo:", error);
-      alert("Erro ao visualizar saldo: " + error.message);
-    });
+    .catch(error => console.error('Erro:', error));
 });
 
-// Adicionar evento de submit ao formulário de cliente
-formulario.addEventListener('submit', function(event) {
-  event.preventDefault(); // Previne o comportamento padrão do formulário
-  cadastrar(); // Chama a função de cadastro
+document.getElementById('form-criar-conta').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const clienteId = document.getElementById('clienteId').value;
+    const saldo = document.getElementById('saldo').value;
+
+    fetch('http://localhost:8080/api/contas/corrente', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            cliente: {
+                id: clienteId
+            },
+            saldo: saldo
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Conta Corrente criada com sucesso!');
+    })
+    .catch(error => console.error('Erro:', error));
 });
 
-// Listar clientes ao carregar a página
-window.onload = listarClientes;
-visualizarClientesBtn.addEventListener('click', listarClientes);
-visualizarContasBtn.addEventListener('click', listarContas);
+document.getElementById('form-pagamento').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const clienteId = document.getElementById('clienteIdPagamento').value;
+    const contaId = document.getElementById('contaIdPagamento').value;
+    const valor = document.getElementById('valorPagamento').value;
+    const tipoConta = document.getElementById('tipoContaPagamento').value;
+
+    fetch('http://localhost:8080/api/pagamentos/deposito', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            clienteId: clienteId,
+            contaId: contaId,
+            valor: valor,
+            tipoConta: tipoConta
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Pagamento processado com sucesso!');
+    })
+    .catch(error => console.error('Erro:', error));
+});
+
+document.getElementById('form-consultar-saldo').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const contaId = document.getElementById('contaIdSaldo').value;
+
+    fetch(`http://localhost:8080/api/contas/corrente/${contaId}/saldo`, {
+        method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('resultado').innerText = `Saldo: R$ ${data}`;
+    })
+    .catch(error => console.error('Erro:', error));
+});
