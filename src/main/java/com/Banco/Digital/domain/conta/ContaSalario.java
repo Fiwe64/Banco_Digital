@@ -4,12 +4,11 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @DiscriminatorValue("SALARIO")
 @NoArgsConstructor
 public class ContaSalario extends Conta {
+
     @Override
     public void depositar(Double valor) {
         setSaldo(getSaldo() + valor);
@@ -24,4 +23,3 @@ public class ContaSalario extends Conta {
         }
     }
 }
-
