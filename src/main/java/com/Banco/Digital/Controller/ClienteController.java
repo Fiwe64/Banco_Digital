@@ -1,7 +1,8 @@
 package com.Banco.Digital.Controller;
 
 import com.Banco.Digital.domain.cliente.Cliente;
-import com.Banco.Digital.repository.ClienteRepository;
+import com.Banco.Digital.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,36 +14,36 @@ import java.util.List;
 public class ClienteController {
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteService;
 
-    // Criar Cliente
+    // Criar novo cliente
     @PostMapping
-    public Cliente criarCliente(@RequestBody Cliente cliente) {
-        return clienteRepository.save(cliente);
+    public Cliente criarCliente(@Valid @RequestBody Cliente cliente) {
+        return clienteService.criarCliente(cliente);
     }
 
-    // Listar Clientes
-    @GetMapping
-    public List<Cliente> listarClientes() {
-        return clienteRepository.findAll();
-    }
-
-    // Atualizar Cliente
+    // Atualizar cliente existente
     @PutMapping("/{id}")
-    public Cliente atualizarCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
-        return clienteRepository.findById(id)
-                .map(clienteExistente -> {
-                    clienteExistente.setNome(cliente.getNome());
-                    clienteExistente.setEmail(cliente.getEmail());
-                    clienteExistente.setTelefone(cliente.getTelefone());
-                    return clienteRepository.save(clienteExistente);
-                })
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    public Cliente atualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
+        return clienteService.atualizarCliente(id, cliente);
     }
 
-    // Deletar Cliente
+    // Buscar cliente por ID
+    @GetMapping("/{id}")
+    public Cliente buscarClientePorId(@PathVariable Long id) {
+        return clienteService.buscarPorId(id);
+    }
+
+    // Listar todos os clientes
+    @GetMapping
+    public List<Cliente> listarTodosClientes() {
+        return clienteService.listarTodos();
+    }
+
+    // Deletar cliente
     @DeleteMapping("/{id}")
     public void deletarCliente(@PathVariable Long id) {
-        clienteRepository.deleteById(id);
+        clienteService.deletarCliente(id);
     }
 }
+
